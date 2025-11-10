@@ -12,19 +12,16 @@ DATASET_PATH = "./database_sentimento/dataset_sentimentos.csv"
 
 # --- Função de limpeza de texto ---
 def limpar_texto(texto):
-    texto = texto.lower()
+    texto = str(texto).lower().strip()
     texto = re.sub(r"http\S+", "", texto)  # remove links
     texto = re.sub(f"[{string.punctuation}]", "", texto)  # remove pontuação
     texto = re.sub(r"\d+", "", texto)  # remove números
-    texto = texto.strip()
-    return texto
+    texto = re.sub(r"\s+", " ", texto)  # remove espaços extras
+    return texto.strip()
 
 # --- Carregar dataset ---
 print("📂 Carregando dataset...")
 
-DATASET_PATH = "database_sentimento/dataset_sentimentos.csv"
-
-# Teste de leitura mais robusto
 try:
     df = pd.read_csv(DATASET_PATH, sep=';', encoding='utf-8', on_bad_lines='skip')
 except UnicodeDecodeError:
@@ -33,19 +30,18 @@ except UnicodeDecodeError:
 print("🔎 Primeiras linhas do dataset:")
 print(df.head())
 
-# Verifica se as colunas existem
+# --- Verificar se as colunas existem ---
 if not {'frase', 'sentimento'}.issubset(df.columns):
     print("❌ Colunas não encontradas. Cabeçalho detectado:")
     print(df.columns)
     raise ValueError("O arquivo CSV precisa conter as colunas 'frase' e 'sentimento'.")
 
-# Verifica se as colunas existem
-if "frase" not in df.columns or "sentimento" not in df.columns:
-    raise ValueError("O arquivo CSV precisa conter as colunas 'frase' e 'sentimento'.")
-
 # --- Limpeza do texto ---
 print("🧹 Limpando textos...")
 df["frase_limpa"] = df["frase"].astype(str).apply(limpar_texto)
+
+# --- Remover linhas vazias ou com NaN ---
+df = df.dropna(subset=["frase_limpa", "sentimento"])
 
 # --- Separar treino e teste ---
 X_train, X_test, y_train, y_test = train_test_split(
