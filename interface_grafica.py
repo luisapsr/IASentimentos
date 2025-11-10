@@ -1,5 +1,18 @@
 import tkinter as tk
-from analisador_ia import analisar_sentimento
+import joblib
+
+# --- Carregar modelo e vetorizador treinados ---
+modelo = joblib.load('modelo_svm.pkl')
+vetorizador = joblib.load('vectorizer_tfidf.pkl')
+
+# --- Função para prever sentimento ---
+def analisar_sentimento(texto):
+    texto = texto.strip()
+    if not texto:
+        return "Digite algo!"
+    vetor = vetorizador.transform([texto])
+    sentimento = modelo.predict(vetor)[0]
+    return sentimento
 
 # --- Interface Gráfica ---
 janela = tk.Tk()
