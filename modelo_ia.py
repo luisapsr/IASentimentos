@@ -21,8 +21,23 @@ def limpar_texto(texto):
 
 # --- Carregar dataset ---
 print("📂 Carregando dataset...")
+
 DATASET_PATH = "database_sentimento/dataset_sentimentos.csv"
-df = pd.read_csv(DATASET_PATH, sep=';', on_bad_lines='skip', encoding='utf-8')
+
+# Teste de leitura mais robusto
+try:
+    df = pd.read_csv(DATASET_PATH, sep=';', encoding='utf-8', on_bad_lines='skip')
+except UnicodeDecodeError:
+    df = pd.read_csv(DATASET_PATH, sep=';', encoding='latin1', on_bad_lines='skip')
+
+print("🔎 Primeiras linhas do dataset:")
+print(df.head())
+
+# Verifica se as colunas existem
+if not {'frase', 'sentimento'}.issubset(df.columns):
+    print("❌ Colunas não encontradas. Cabeçalho detectado:")
+    print(df.columns)
+    raise ValueError("O arquivo CSV precisa conter as colunas 'frase' e 'sentimento'.")
 
 # Verifica se as colunas existem
 if "frase" not in df.columns or "sentimento" not in df.columns:
