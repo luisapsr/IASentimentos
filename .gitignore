@@ -9,3 +9,5 @@ experimentos/
 experimentos/
 *.pkl
 *.joblib
+
+bert_vectorizer.pkl
