@@ -5,3 +5,7 @@
 # Experimentos e testes
 experimentos/
 *.ipynb_checkpoints
+
+experimentos/
+*.pkl
+*.joblib
