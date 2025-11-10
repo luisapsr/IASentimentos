@@ -1,17 +1,22 @@
 import tkinter as tk
 import joblib
+from sentence_transformers import SentenceTransformer
 
 # --- Carregar modelo e vetorizador treinados ---
-modelo = joblib.load('modelo_svm.pkl')
-vetorizador = joblib.load('vectorizer_tfidf.pkl')
+modelo = joblib.load('modelo_mlp_turbo.pkl')
+encoder = joblib.load('label_encoder.pkl')
+model_embedding = joblib.load('bert_vectorizer.pkl')
 
 # --- Função para prever sentimento ---
 def analisar_sentimento(texto):
     texto = texto.strip()
     if not texto:
         return "Digite algo!"
-    vetor = vetorizador.transform([texto])
-    sentimento = modelo.predict(vetor)[0]
+    # Gerar embedding da frase
+    vetor = model_embedding.encode([texto])
+    sentimento_enc = modelo.predict(vetor)[0]
+    # Decodificar label
+    sentimento = encoder.inverse_transform([sentimento_enc])[0]
     return sentimento
 
 # --- Interface Gráfica ---
