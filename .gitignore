@@ -1,1 +1,7 @@
-models/*.pkl
+# Modelos grandes
+*.pkl
+*.joblib
+
+# Experimentos e testes
+experimentos/
+*.ipynb_checkpoints
