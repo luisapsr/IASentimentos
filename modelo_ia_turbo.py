@@ -1,19 +1,3 @@
-import nltk
-
-# tenta importar WordNet
-try:
-    from nltk.corpus import wordnet
-    wordnet.synsets('test')
-except LookupError:
-    nltk.download('wordnet')
-
-# tenta importar POS tagger
-try:
-    from nltk import pos_tag
-    pos_tag(["test"])
-except LookupError:
-    nltk.download('averaged_perceptron_tagger')
-
 import pandas as pd
 import re
 import string
@@ -23,10 +7,27 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.metrics import classification_report, accuracy_score
 from sklearn.neural_network import MLPClassifier
 from sentence_transformers import SentenceTransformer
-import nlpaug.augmenter.word as naw  # só uma vez
-
+import nlpaug.augmenter.word as naw
 import nltk
-nltk.download('wordnet')  # garante que os dados do WordNet estejam disponíveis
+
+# --- Garantir recursos NLTK necessários ---
+
+# WordNet
+try:
+    from nltk.corpus import wordnet
+    wordnet.synsets('test')
+except LookupError:
+    print("⚡ WordNet não encontrado. Baixando...")
+    nltk.download('wordnet')
+
+# POS tagger inglês
+try:
+    from nltk import pos_tag
+    pos_tag(["test"])
+except LookupError:
+    print("⚡ POS tagger não encontrado. Baixando...")
+    nltk.download('averaged_perceptron_tagger')
+    nltk.download('averaged_perceptron_tagger_eng')
 
 # --- Caminho do dataset ---
 DATASET_PATH = "./database_sentimento/dataset_sentimentos.csv"
@@ -40,6 +41,7 @@ def limpar_texto(texto):
     texto = texto.strip()
     return texto
 
+# --- Carregar dataset ---
 print("📂 Carregando dataset...")
 df = pd.read_csv(DATASET_PATH, sep=";", encoding="utf-8", on_bad_lines="skip")
 
@@ -55,7 +57,7 @@ print("⚖️ Balanceando classes...")
 min_count = df["sentimento"].value_counts().min()
 df_bal = df.groupby("sentimento").sample(min_count, random_state=42).reset_index(drop=True)
 
-# --- Data augmentation (gera novas frases com sinônimos) ---
+# --- Data augmentation com sinônimos ---
 print("🧬 Aumentando dataset com sinônimos...")
 aug = naw.SynonymAug(aug_src='wordnet')
 df_aug = df_bal.copy()
@@ -78,7 +80,7 @@ encoder = LabelEncoder()
 y_train_enc = encoder.fit_transform(y_train)
 y_test_enc = encoder.transform(y_test)
 
-# --- Modelo neural ---
+# --- Treinar modelo neural MLP ---
 print("🤖 Treinando rede neural MLP...")
 modelo = MLPClassifier(hidden_layer_sizes=(256, 128), activation='relu',
                        solver='adam', max_iter=500, random_state=42)
@@ -91,7 +93,7 @@ acc = accuracy_score(y_test_enc, y_pred)
 print(f"\n✅ Acurácia: {acc * 100:.2f}%\n")
 print(classification_report(y_test_enc, y_pred, target_names=encoder.classes_))
 
-# --- Salvar modelo e encoder ---
+# --- Salvar modelo, encoder e vetorizador BERT ---
 print("💾 Salvando modelo, encoder e vetorizador BERT...")
 joblib.dump(modelo, "modelo_mlp_turbo.pkl")
 joblib.dump(encoder, "label_encoder.pkl")
