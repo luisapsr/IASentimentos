@@ -1,11 +1,18 @@
 import nltk
 
-# tenta importar o WordNet, se não existir, baixa automaticamente
+# tenta importar WordNet
 try:
     from nltk.corpus import wordnet
-    wordnet.synsets('test')  # força o carregamento
+    wordnet.synsets('test')
 except LookupError:
     nltk.download('wordnet')
+
+# tenta importar POS tagger
+try:
+    from nltk import pos_tag
+    pos_tag(["test"])
+except LookupError:
+    nltk.download('averaged_perceptron_tagger')
 
 import pandas as pd
 import re
