@@ -21,7 +21,7 @@ def limpar_texto(texto):
 
 # --- Carregar dataset ---
 print("📂 Carregando dataset...")
-df = pd.read_csv(DATASET_PATH)
+df = pd.read_csv(DATASET_PATH, sep=';', on_bad_lines='skip', encoding='utf-8')
 
 # Verifica se as colunas existem
 if "frase" not in df.columns or "sentimento" not in df.columns:
