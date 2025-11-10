@@ -21,7 +21,7 @@ def limpar_texto(texto):
 
 # --- Carregar dataset ---
 print("📂 Carregando dataset...")
-DATASET_PATH = "dataset_sentimentos.csv"
+DATASET_PATH = "database_sentimento/dataset_sentimentos.csv"
 df = pd.read_csv(DATASET_PATH, sep=';', on_bad_lines='skip', encoding='utf-8')
 
 # Verifica se as colunas existem
