@@ -57,11 +57,15 @@ print("⚖️ Balanceando classes...")
 min_count = df["sentimento"].value_counts().min()
 df_bal = df.groupby("sentimento").sample(min_count, random_state=42).reset_index(drop=True)
 
-# --- Data augmentation com sinônimos ---
+# --- Data augmentation (gera novas frases com sinônimos) ---
 print("🧬 Aumentando dataset com sinônimos...")
 aug = naw.SynonymAug(aug_src='wordnet')
+
 df_aug = df_bal.copy()
-df_aug["frase_limpa"] = df_aug["frase_limpa"].apply(lambda x: aug.augment(x))
+# Certifica que cada célula é uma string (não lista) após o aumento
+df_aug["frase_limpa"] = df_aug["frase_limpa"].apply(lambda x: " ".join(aug.augment(x)))
+
+# Combina dataset original + dataset aumentado
 df_final = pd.concat([df_bal, df_aug]).reset_index(drop=True)
 
 # --- Separar treino e teste ---
