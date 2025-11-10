@@ -7,7 +7,10 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.metrics import classification_report, accuracy_score
 from sklearn.neural_network import MLPClassifier
 from sentence_transformers import SentenceTransformer
-import nlpaug.augmenter.word as naw
+import nlpaug.augmenter.word as naw  # só uma vez
+
+import nltk
+nltk.download('wordnet')  # garante que os dados do WordNet estejam disponíveis
 
 # --- Caminho do dataset ---
 DATASET_PATH = "./database_sentimento/dataset_sentimentos.csv"
