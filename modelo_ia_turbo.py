@@ -1,3 +1,12 @@
+import nltk
+
+# tenta importar o WordNet, se não existir, baixa automaticamente
+try:
+    from nltk.corpus import wordnet
+    wordnet.synsets('test')  # força o carregamento
+except LookupError:
+    nltk.download('wordnet')
+
 import pandas as pd
 import re
 import string
